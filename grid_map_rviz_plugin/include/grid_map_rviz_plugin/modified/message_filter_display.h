@@ -42,23 +42,25 @@
 
 #include <rviz/display.h>
 #include <rviz/rviz_export.h>
+#include <iostream>
 
-namespace rviz
+//namespace rviz 
+namespace elevation_mapping
 {
 /** @brief Helper superclass for MessageFilterDisplay, needed because
  * Qt's moc and c++ templates don't work nicely together.  Not
  * intended to be used directly. */
-class RVIZ_EXPORT _RosTopicDisplay : public Display
+class RVIZ_EXPORT _RosTopicDisplay : public rviz::Display 
 {
   Q_OBJECT
 public:
   _RosTopicDisplay()
   {
-    topic_property_ = new RosTopicProperty("Topic", "", "", "", this, SLOT(updateTopic()));
+    topic_property_ = new rviz::RosTopicProperty("Topic", "", "", "", this, SLOT(updateTopic()));
     unreliable_property_ =
-        new BoolProperty("Unreliable", false, "Prefer UDP topic transport", this, SLOT(updateTopic()));
+        new rviz::BoolProperty("Unreliable", false, "Prefer UDP topic transport", this, SLOT(updateTopic()));
     queue_size_property_ =
-        new IntProperty("Queue Size", 1,
+        new rviz::IntProperty("Queue Size", 10, //changed this from 1 to 10 like said on git https://github.com/ANYbotics/elevation_mapping/issues/141.
                         "Size of TF message filter queue.\n"
                         "Increasing this is useful if your TF data is delayed significantly "
                         "w.r.t. your data, but it can greatly increase memory usage as well.",
@@ -71,9 +73,9 @@ protected Q_SLOTS:
   virtual void updateQueueSize() = 0;
 
 protected:
-  RosTopicProperty* topic_property_;
-  BoolProperty* unreliable_property_;
-  IntProperty* queue_size_property_;
+  rviz::RosTopicProperty* topic_property_;
+  rviz::BoolProperty* unreliable_property_;
+  rviz::IntProperty* queue_size_property_;
 };
 
 /** @brief Display subclass using a tf2_ros::MessageFilter, templated on the ROS message type.
@@ -99,12 +101,12 @@ public:
   }
 
   void onInitialize() override
-  {
+  { std::cout << "Test"<< std::endl;
     tf_filter_ =
         new tf2_ros::MessageFilter<MessageType>(*context_->getTF2BufferPtr(), fixed_frame_.toStdString(),
                                                 static_cast<uint32_t>(queue_size_property_->getInt()),
                                                 update_nh_);
-
+        
     tf_filter_->connectInput(sub_);
     tf_filter_->registerCallback(
         boost::bind(&MessageFilterDisplay<MessageType>::incomingMessage, this, _1));
@@ -144,7 +146,9 @@ protected:
 
   void updateQueueSize() override
   {
+    std::cout << "Test"<< std::endl;
     tf_filter_->setQueueSize(static_cast<uint32_t>(queue_size_property_->getInt()));
+    
     subscribe();
   }
 
@@ -163,13 +167,15 @@ protected:
       {
         transport_hint = ros::TransportHints().unreliable();
       }
+      std::cout << "Test"<< std::endl;
       sub_.subscribe(update_nh_, topic_property_->getTopicStd(),
                      static_cast<uint32_t>(queue_size_property_->getInt()), transport_hint);
-      setStatus(StatusProperty::Ok, "Topic", "OK");
+                    
+      setStatus(rviz::StatusProperty::Ok, "Topic", "OK");
     }
     catch (ros::Exception& e)
     {
-      setStatus(StatusProperty::Error, "Topic", QString("Error subscribing: ") + e.what());
+      setStatus(rviz::StatusProperty::Error, "Topic", QString("Error subscribing: ") + e.what());
     }
   }
 
@@ -206,7 +212,7 @@ protected:
     }
 
     ++messages_received_;
-    setStatus(StatusProperty::Ok, "Topic", QString::number(messages_received_) + " messages received");
+    setStatus(rviz::StatusProperty::Ok, "Topic", QString::number(messages_received_) + " messages received");
 
     processMessage(msg);
   }
@@ -221,6 +227,6 @@ protected:
   uint32_t messages_received_;
 };
 
-} // end namespace rviz
+} // end namespace rviz (elevation_mapping)
 
 #endif // MESSAGE_FILTER_DISPLAY_H

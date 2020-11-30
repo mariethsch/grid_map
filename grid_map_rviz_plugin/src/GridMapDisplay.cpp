@@ -7,7 +7,9 @@
  */
 
 #include "grid_map_rviz_plugin/GridMapVisual.hpp"
+//#include "grid_map_rviz_plugin/include/grid_map_rviz_plugin/GridMapVisual.hpp"
 #include "grid_map_rviz_plugin/GridMapDisplay.hpp"
+//#include "grid_map_rviz_plugin/include/grid_map_rviz_plugin/GridMapDisplay.hpp"
 // The following replaces <rviz/frame_manager.h>
 #include "grid_map_rviz_plugin/modified/frame_manager.h"
 
@@ -22,7 +24,7 @@
 #include <rviz/properties/float_property.h>
 #include <rviz/properties/int_property.h>
 #include <rviz/properties/enum_property.h>
-#include <rviz/properties/editable_enum_property.h>
+#include <rviz/properties/editable_enum_property.h> 
 
 namespace grid_map_rviz_plugin {
 

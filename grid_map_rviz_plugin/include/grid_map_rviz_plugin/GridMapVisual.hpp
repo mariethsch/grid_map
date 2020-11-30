@@ -22,6 +22,7 @@ class ColourValue;
 }  // namespace Ogre
 
 namespace rviz {
+//namespace elevation_mappping{
 class BillboardLine;
 }
 
